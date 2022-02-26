@@ -5,6 +5,13 @@ DATASEG
 
 character 	dw 2, 2, 15, 15, 15, 15, 15, 15, 2, 2, 0, 2, 15, 2, 2, 2, 2, 2, 2, 15, 2, 0, 2, 15, 15, 2, 2, 2, 2, 2, 15, 2, 0, 2, 15, 2, 2, 15, 15, 2, 2, 15, 2, 0, 2, 15, 2, 2, 15, 15, 2, 2, 15, 2, 0, 2, 15, 2, 2, 2, 2, 2, 15, 15, 2, 0, 2, 15, 2, 15, 15, 2, 15, 15, 15, 2, 0, 2, 2, 15, 15, 15, 2, 2, 15, 2, 2, 0, 2, 2, 15, 2, 2, 2, 15, 2, 2, 2, 0, 2, 2, 15, 15, 15, 15, 15, 2, 2, 2, 1
 
+score1 dw "cs", '$'
+score2 dw "ro", '$'
+score3 dw ":e", '$'
+units dw '', '$'
+dozens dw '', '$'
+score dw 0
+
 cube1 dw 200, 100, 3
 cube2 dw 150, 100, 2
 cube3 dw 100, 100, 3
@@ -28,21 +35,21 @@ endp
 
 proc print_dot_from_memory
     push ax
-push bx
-push cx
-push dx
+	push bx
+	push cx
+	push dx
 
     mov cx, [si]
     mov al, [color]
     mov dx, [si + 2]
     mov bh, 0h
-mov ah, 0ch
+	mov ah, 0ch
     int 10h
 
-pop dx
-pop cx
-pop bx
-pop ax
+	pop dx
+	pop cx
+	pop bx
+	pop ax
     ret
 endp
 
@@ -101,164 +108,163 @@ end_for:
 endp
 
 proc print_cube
-push ax
-push bx
+	push ax
+	push bx
 
-mov bx, 10h
+	mov bx, 10h
 up_10:
-call print_dot_from_memory
-mov ax, [si]
-inc ax
-mov [si], ax
-dec bx
-cmp bx, 0h
-jne up_10
-mov bx, 10h
+	call print_dot_from_memory
+	mov ax, [si]
+	inc ax
+	mov [si], ax
+	dec bx
+	cmp bx, 0h
+	jne up_10
+	mov bx, 10h
 right_10:
-call print_dot_from_memory
-mov ax, [si + 2]
-inc ax
-mov [si + 2], ax
-dec bx
-cmp bx, 0h
-jne right_10
-mov bx, 10h
+	call print_dot_from_memory
+	mov ax, [si + 2]
+	inc ax
+	mov [si + 2], ax
+	dec bx
+	cmp bx, 0h
+	jne right_10
+	mov bx, 10h
 down_10:
-call print_dot_from_memory
-mov ax, [si]
-dec ax
-mov [si], ax
-dec bx
-cmp bx, 0h
-jne down_10
-mov bx, 10h
+	call print_dot_from_memory
+	mov ax, [si]
+	dec ax
+	mov [si], ax
+	dec bx
+	cmp bx, 0h
+	jne down_10
+	mov bx, 10h
 left_10:
-call print_dot_from_memory
-mov ax, [si + 2]
-dec ax
-mov [si + 2], ax
-dec bx
-cmp bx, 0h
-jne left_10
-pop bx
-pop ax
-ret
+	call print_dot_from_memory
+	mov ax, [si + 2]
+	dec ax
+	mov [si + 2], ax
+	dec bx
+	cmp bx, 0h
+	jne left_10
+	pop bx
+	pop ax
+	ret
 endp
 
 proc change_dir
-;comparing
-mov ax, [si]
-mov bx, [si + 2]
-mov cx, [si + 4]
+	;comparing
+	mov ax, [si]
+	mov bx, [si + 2]
+	mov cx, [si + 4]
 
-cmp cx, 1
-je dir_1
+	cmp cx, 1
+	je dir_1
 
-cmp cx, 2
-je dir_2
+	cmp cx, 2
+	je dir_2
 
-cmp cx, 3
-je dir_3
+	cmp cx, 3
+	je dir_3
 
-cmp cx, 4
-je dir_4
-jmp continue
+	cmp cx, 4
+	je dir_4
+	jmp continue
 
 dir_1: ;two left one up
-
-mov [color], 0
-call print_enemy
-sub ax, 2
-dec bx
-mov [color], 15
-jmp continue
+	mov [color], 0
+	call print_enemy
+	sub ax, 2
+	dec bx
+	mov [color], 15
+	jmp continue
 
 dir_2: ;two right one up
-mov [color], 0
-call print_enemy
-add ax, 2
-dec bx
-mov [color], 15
-jmp continue
+	mov [color], 0
+	call print_enemy
+	add ax, 2
+	dec bx
+	mov [color], 15
+	jmp continue
 
 dir_3: ;two left one down
-mov [color], 0
-call print_enemy
-sub ax, 2
-inc bx
-mov [color], 15
-jmp continue
+	mov [color], 0
+	call print_enemy
+	sub ax, 2
+	inc bx
+	mov [color], 15
+	jmp continue
 
 dir_4: ;two right one down
-mov [color], 0
-call print_enemy
-add ax, 2
-inc bx
-mov [color], 15
-jmp continue
+	mov [color], 0
+	call print_enemy
+	add ax, 2
+	inc bx
+	mov [color], 15
+	jmp continue
 
 
 continue:
-mov [si], ax
-mov [si + 2], bx
-ret
+	mov [si], ax
+	mov [si + 2], bx
+	ret
 endp
 
 proc draw_player
-mov bx, 02h
+	mov bx, 02h
 position_start:
-dec [player]
-dec [player + 2]
-call print_dot_from_memory
-dec bx
-cmp bx, 0h
-jne position_start
-mov bx, 02h
-twice:
-mov cx, 04h
+	dec [player]
+	dec [player + 2]
+	call print_dot_from_memory
+	dec bx
+	cmp bx, 0h
+	jne position_start
+	mov bx, 02h
+	twice:
+	mov cx, 04h
 right_4:
-inc [player]
-call print_dot_from_memory
-dec cx
-cmp cx, 0h
-jne right_4
-inc [player + 2]
-call print_dot_from_memory
-mov cx, 04h
+	inc [player]
+	call print_dot_from_memory
+	dec cx
+	cmp cx, 0h
+	jne right_4
+	inc [player + 2]
+	call print_dot_from_memory
+	mov cx, 04h
 left_4:
-dec [player]
-call print_dot_from_memory
-dec cx
-cmp cx, 0h
-jne left_4
-inc [player + 2]
-call print_dot_from_memory
-dec bx
-cmp bx, 0h
-jne twice
-mov cx, 04h
+	dec [player]
+	call print_dot_from_memory
+	dec cx
+	cmp cx, 0h
+	jne left_4
+	inc [player + 2]
+	call print_dot_from_memory
+	dec bx
+	cmp bx, 0h
+	jne twice
+	mov cx, 04h
 last_right:
-inc [player]
-call print_dot_from_memory
-dec cx
-cmp cx, 0h
-jne last_right
-mov bx, 02h
+	inc [player]
+	call print_dot_from_memory
+	dec cx
+	cmp cx, 0h
+	jne last_right
+	mov bx, 02h
 position_end:
-dec [player]
-dec [player + 2]
-dec bx
-cmp bx, 0h
-jne position_end
+	dec [player]
+	dec [player + 2]
+	dec bx
+	cmp bx, 0h
+	jne position_end
 
 ret
 endp
 
 proc player_change
-;; 04bh = left
-;; 04dh = right
-;; 050h = down
-;; 048h = up
+	;; 04bh = left
+	;; 04dh = right
+	;; 050h = down
+	;; 048h = up
 
     cmp [player_dir], 'a'
     je left_player
@@ -272,40 +278,40 @@ proc player_change
     cmp [player_dir], 'w'
     je up_player
 
-jmp con_player
+	jmp con_player
 left_player:
-mov ax, [player]
-dec ax
-mov [player], ax
+	mov ax, [player]
+	sub ax, 2
+	mov [player], ax
     jmp con_player
 right_player:
-mov ax, [player]
-inc ax
-mov [player], ax
+	mov ax, [player]
+	add ax, 2
+	mov [player], ax
     jmp con_player
 down_player:
-mov ax, [player + 2]
-inc ax
-mov [player + 2], ax
+	mov ax, [player + 2]
+	add ax, 2
+	mov [player + 2], ax
     jmp con_player
 up_player:
-mov ax, [player + 2]
-dec ax
-mov [player + 2], ax
+	mov ax, [player + 2]
+	sub ax, 2
+	mov [player + 2], ax
     jmp con_player
 con_player:
     ret
 endp
 
 proc move_player
-mov si, offset player
-mov [color], 0
-call draw_player
-call player_change
-mov [color], 15
-call draw_player
+	mov si, offset player
+	mov [color], 0
+	call draw_player
+	call player_change
+	mov [color], 15
+	call draw_player
 
-ret
+	ret
 endp
 
 ;proc random_x
@@ -378,215 +384,284 @@ proc random
 endp
 
 proc enemy_out_of_bounds
-mov [color], 0
-call print_enemy
-mov [color], 15
+	mov [color], 0
+	call print_enemy
+	mov [color], 15
 
-mov bx, 308
-cmp [si], bx
-jl enemy_left
-mov ax, 3
-mov [si], ax
+	mov bx, 308
+	cmp [si], bx
+	jl enemy_left
+	mov ax, 3
+	mov [si], ax
 enemy_left:
-mov bx, 2
-cmp [si], bx
-ja enemy_right
-mov ax, 307
-mov [si], ax
+	mov bx, 2
+	cmp [si], bx
+	ja enemy_right
+	mov ax, 307
+	mov [si], ax
 enemy_right:
-mov bx, 188
-cmp [si + 2], bx
-jl enemy_above
-mov ax, 3
-mov [si + 2], ax
+	mov bx, 188
+	cmp [si + 2], bx
+	jl enemy_above
+	mov ax, 3
+	mov [si + 2], ax
 enemy_above:
-mov bx, 2
-cmp [si + 2], bx
-ja enemy_below
-mov ax, 187
-mov [si + 2], ax
+	mov bx, 2
+	cmp [si + 2], bx
+	ja enemy_below
+	mov ax, 187
+	mov [si + 2], ax
 enemy_below:
-call print_enemy
-ret
+	call print_enemy
+	ret
 endp
 
 proc calc_incline_2
-cmp cx, 0
-je case_0
-cmp cx, 1
-je case_1
-cmp cx, 2
-je case_2
-cmp cx, 3
-je case_3
+	cmp cx, 0
+	je case_0
+	cmp cx, 1
+	je case_1
+	cmp cx, 2
+	je case_2
+	cmp cx, 3
+	je case_3
 
 case_0:
-mov ax, [mouse]
-mov bx, [mouse + 2]
+	mov ax, [mouse]
+	mov bx, [mouse + 2]
 
-sub ax, [player]
-sub bx, [player + 2]
-mov cx, 4
-jmp cases_over
+	sub ax, [player]
+	sub bx, [player + 2]
+	mov cx, 4
+	jmp cases_over
 case_1:
-mov ax, [player]
-mov bx, [mouse + 2]
+	mov ax, [player]
+	mov bx, [mouse + 2]
 
-sub ax, [mouse]
-sub bx, [player + 2]
-mov cx, 5
-jmp cases_over
+	sub ax, [mouse]
+	sub bx, [player + 2]
+	mov cx, 5
+	jmp cases_over
 case_2:
-mov ax, [mouse]
-mov bx, [player + 2]
+	mov ax, [mouse]
+	mov bx, [player + 2]
 
-sub ax, [player]
-sub bx, [mouse + 2]
-mov cx, 6
-jmp cases_over
+	sub ax, [player]
+	sub bx, [mouse + 2]
+	mov cx, 6
+	jmp cases_over
 case_3:
-mov ax, [player]
-mov bx, [player + 2]
+	mov ax, [player]
+	mov bx, [player + 2]
 
-sub ax, [mouse]
-sub bx, [mouse + 2]
-mov cx, 7
-jmp cases_over
-
+	sub ax, [mouse]
+	sub bx, [mouse + 2]
+	mov cx, 7
+	jmp cases_over
 cases_over:
-mov dx, 0
-div bx
+	mov dx, 0
+	div bx
 
-ret
+	ret
 endp
 
 proc calc_shot_incline
 
-mov ax, 0
-mov bx, 0
-mov cx, 0
-mov ax, [mouse + 2]
-mov bx, [mouse]
+	mov ax, 0
+	mov bx, 0
+	mov cx, 0
+	mov ax, [mouse + 2]
+	mov bx, [mouse]
 
-cmp ax, [player + 2]
-jl mouse_lower
-cmp bx, [player]
-jl mouse_left
+	cmp ax, [player + 2]
+	jl mouse_lower
+	cmp bx, [player]
+	jl mouse_left
 
-sub ax, [player + 2]
-sub bx, [player]
-mov cx, 0
-jmp divide
+	sub ax, [player + 2]
+	sub bx, [player]
+	mov cx, 0
+	jmp divide
 
 mouse_left:
-mov bx, [player]
-sub ax, [player + 2]
-sub bx, [mouse]
-mov cx, 1
-jmp divide
+	mov bx, [player]
+	sub ax, [player + 2]
+	sub bx, [mouse]
+	mov cx, 1
+	jmp divide
 
 mouse_lower:
-cmp bx, [player]
-jl mouse_lower_left
-mov ax, [player + 2]
-sub ax, [mouse + 2]
-sub bx, [player]
-mov cx, 2
-jmp divide
+	cmp bx, [player]
+	jl mouse_lower_left
+	mov ax, [player + 2]
+	sub ax, [mouse + 2]
+	sub bx, [player]
+	mov cx, 2
+	jmp divide
 
 mouse_lower_left:
-mov ax, [player + 2]
-mov bx, [player]
-sub ax, [mouse + 2]
-sub bx, [mouse]
-mov cx, 3
-jmp divide
+	mov ax, [player + 2]
+	mov bx, [player]
+	sub ax, [mouse + 2]
+	sub bx, [mouse]
+	mov cx, 3
+	jmp divide
 
 divide:
-mov dx, 0
-div bx
+	mov dx, 0
+	div bx
 
-cmp ax, 0
-jne good_incline
+	cmp ax, 0
+	jne good_incline
 
-call calc_incline_2
+	call calc_incline_2
 
 good_incline:
-cmp ax, 4
-jl incline_not_too_high
-mov ax, 4
+	cmp ax, 4
+	jl incline_not_too_high
+	mov ax, 4
 incline_not_too_high:
-mov [shot + 4], ax
-mov [shot + 6], cx
+	mov [shot + 4], ax
+	mov [shot + 6], cx
 
-ret
+	ret
 endp
 
 proc move_shot
-mov si, offset shot
-mov [color], 0
-call print_dot_from_memory
-mov [color], 15
+	mov si, offset shot
+	mov [color], 0
+	call print_dot_from_memory
+	mov [color], 15
 
-mov cx, [shot + 6]
-mov ax, [shot]
-mov bx, [shot + 2]
+	mov cx, [shot + 6]
+	mov ax, [shot]
+	mov bx, [shot + 2]
 
-cmp cx, 0
-je case0
-cmp cx, 1
-je case1
-cmp cx, 2
-je case2
-cmp cx, 3
-je case3
-cmp cx, 4
-je case4
-cmp cx, 5
-je case5
-cmp cx, 6
-je case6
-cmp cx, 7
-je case7
-jmp no_case
+	cmp cx, 0
+	je case0
+	cmp cx, 1
+	je case1
+	cmp cx, 2
+	je case2
+	cmp cx, 3
+	je case3
+	cmp cx, 4
+	je case4
+	cmp cx, 5
+	je case5
+	cmp cx, 6
+	je case6
+	cmp cx, 7
+	je case7
+	jmp no_case
 
 case0:
-inc ax
-add bx, [shot + 4]
-jmp no_case
+	inc ax
+	add bx, [shot + 4]
+	jmp no_case
 case1:
-dec ax
-add bx, [shot + 4]
-jmp no_case
+	dec ax
+	add bx, [shot + 4]
+	jmp no_case
 case2:
-inc ax
-sub bx, [shot + 4]
-jmp no_case
+	inc ax
+	sub bx, [shot + 4]
+	jmp no_case
 case3:
-dec ax
-sub bx, [shot + 4]
-jmp no_case
+	dec ax
+	sub bx, [shot + 4]
+	jmp no_case
 case4:
-inc bx
-add ax, [shot + 4]
-jmp no_case
+	inc bx
+	add ax, [shot + 4]
+	jmp no_case
 case5:
-inc bx
-sub ax, [shot + 4]
-jmp no_case
+	inc bx
+	sub ax, [shot + 4]
+	jmp no_case
 case6:
-dec bx
-add ax, [shot + 4]
-jmp no_case
+	dec bx
+	add ax, [shot + 4]
+	jmp no_case
 case7:
-dec bx
-sub ax, [shot + 4]
+	dec bx
+	sub ax, [shot + 4]
 no_case:
-mov [shot], ax
-mov [shot + 2], bx
-mov si, offset shot
-call print_dot_from_memory
-ret
+	mov [shot], ax
+	mov [shot + 2], bx
+	mov si, offset shot
+	call print_dot_from_memory
+	ret
+endp
+
+proc display_score
+	mov ah, 02h
+	mov bh, 00h
+	mov dh, 00h
+	mov dl, 020h
+	int 10h
+	
+	mov ah, 09h
+	
+	lea dx, [score1]
+	int 21h
+	
+	mov ah, 02h
+	mov bh, 00h
+	mov dh, 00h
+	mov dl, 022h
+	int 10h
+	
+	mov ah, 09h
+	
+	lea dx, [score2]
+	int 21h
+	
+	mov ah, 02h
+	mov bh, 00h
+	mov dh, 00h
+	mov dl, 024h
+	int 10h
+	
+	mov ah, 09h
+	
+	lea dx, [score3]
+	int 21h
+	
+	mov ax, [score]
+	mov bx, 10
+	mov dx, 0
+	div bx
+	
+	add ax, 30h
+	add dx, 30h
+	
+	mov [dozens], ax
+	mov [units], dx
+	
+	mov ah, 02h
+	mov bh, 00h
+	mov dh, 00h
+	mov dl, 026h
+	int 10h
+	
+	mov ah, 09h
+	
+	lea dx, [dozens]
+	int 21h
+	
+	mov ah, 02h
+	mov bh, 00h
+	mov dh, 00h
+	mov dl, 027h
+	int 10h
+	
+	mov ah, 09h
+	
+	lea dx, [units]
+	int 21h
+	
+	ret
 endp
 
 proc shot_collsion_detection
@@ -641,6 +716,9 @@ proc shot_collsion_detection
 	mov [shot], ax
 	mov [shot + 2], bx
 	
+	mov ax, [score]
+	inc ax
+	mov [score], ax
 no_collision:
 	
 	ret
@@ -724,132 +802,134 @@ proc color_pixel
 
 next:
 
-MOV     CX, 01H
-MOV     DX, 44H
-MOV     AH, 86H
-INT     15H
+	MOV     CX, 01H
+	MOV     DX, 44H
+	MOV     AH, 86H
+	INT     15H
 
-push cx
-push dx
-push ax
-mov bx, 10h
-mov ax, 0001h
-int 33h
-mov ax, 0003h
-int 33h
-mov [mouse + 2], dx
-mov ax, cx
-sar ax, 1
-mov [mouse], ax
-pop ax
-pop dx
-pop cx
+	push cx
+	push dx
+	push ax
+	mov bx, 10h
+	mov ax, 0001h
+	int 33h
+	mov ax, 0003h
+	int 33h
+	mov [mouse + 2], dx
+	mov ax, cx
+	sar ax, 1
+	mov [mouse], ax
+	pop ax
+	pop dx
+	pop cx
 
-cmp bx, 1
-jne no_click
-mov si, offset shot
-mov [color], 0
-call print_dot_from_memory
-mov [color], 15
-mov ax, [player]
-mov bx, [player + 2]
-mov [shot], ax
-mov [shot + 2], bx
-call calc_shot_incline
+	cmp bx, 1
+	jne no_click
+	mov si, offset shot
+	mov [color], 0
+	call print_dot_from_memory
+	mov [color], 15
+	mov ax, [player]
+	mov bx, [player + 2]
+	mov [shot], ax
+	mov [shot + 2], bx
+	call calc_shot_incline
 no_click:
 
-cmp [shot + 6], 8
-jne shot_shot
-mov ax, [player]
-mov bx, [player + 2]
-mov [shot], ax
-mov [shot + 2], bx
+	cmp [shot + 6], 8
+	jne shot_shot
+	mov ax, [player]
+	mov bx, [player + 2]
+	mov [shot], ax
+	mov [shot + 2], bx
 shot_shot:
-mov si, offset player
-call draw_player
-mov si, offset shot
-call print_dot_from_memory
-call shot_out_of_bounds
-call move_shot
-mov ah, 01h
-int 16h
-jnz pressed
-jz not_pressed
+	mov si, offset player
+	call draw_player
+	mov si, offset shot
+	call print_dot_from_memory
+	call shot_out_of_bounds
+	call move_shot
+	mov ah, 01h
+	int 16h
+	jnz pressed
+	jz not_pressed
 pressed:
-mov ah, 0h
-int 16h
-mov [player_dir], al
-call move_player
-call draw_player
+	mov ah, 0h
+	int 16h
+	mov [player_dir], al
+	call move_player
+	call draw_player
 not_pressed:
 
-mov si, offset cube1
-call enemy_out_of_bounds
+	mov si, offset cube1
+	call enemy_out_of_bounds
 
-mov si, offset cube2
-call enemy_out_of_bounds
+	mov si, offset cube2
+	call enemy_out_of_bounds
 
-mov si, offset cube3
-call enemy_out_of_bounds
+	mov si, offset cube3
+	call enemy_out_of_bounds
 
-mov si, offset cube4
-call enemy_out_of_bounds
+	mov si, offset cube4
+	call enemy_out_of_bounds
 
-mov si, offset cube1
-call print_enemy
-mov si, offset cube2
-call print_enemy
-mov si, offset cube3
-call print_enemy
-mov si, offset cube4
-call print_enemy
+	mov si, offset cube1
+	call print_enemy
+	mov si, offset cube2
+	call print_enemy
+	mov si, offset cube3
+	call print_enemy
+	mov si, offset cube4
+	call print_enemy
 
-mov si, offset cube1
-call change_dir
-mov si, offset cube2
-call change_dir
-mov si, offset cube3
-call change_dir
-mov si, offset cube4
-call change_dir
+	mov si, offset cube1
+	call change_dir
+	mov si, offset cube2
+	call change_dir
+	mov si, offset cube3
+	call change_dir
+	mov si, offset cube4
+	call change_dir
 
-mov si, offset cube1
-call print_enemy
-mov si, offset cube2
-call print_enemy
-mov si, offset cube3
-call print_enemy
-mov si, offset cube4
-call print_enemy
+	mov si, offset cube1
+	call print_enemy
+	mov si, offset cube2
+	call print_enemy
+	mov si, offset cube3
+	call print_enemy
+	mov si, offset cube4
+	call print_enemy
 
-mov si, offset cube1
-call player_collision_detection
+	mov si, offset cube1
+	call player_collision_detection
 
-mov si, offset cube2
-call player_collision_detection
+	mov si, offset cube2
+	call player_collision_detection
 
-mov si, offset cube3
-call player_collision_detection
+	mov si, offset cube3
+	call player_collision_detection
 
-mov si, offset cube4
-call player_collision_detection
+	mov si, offset cube4
+	call player_collision_detection
 
-mov si, offset cube1
-call shot_collsion_detection
+	mov si, offset cube1
+	call shot_collsion_detection
 
-mov si, offset cube2
-call shot_collsion_detection
+	mov si, offset cube2
+	call shot_collsion_detection
 
-mov si, offset cube3
-call shot_collsion_detection
+	mov si, offset cube3
+	call shot_collsion_detection
 
-mov si, offset cube4
-call shot_collsion_detection
+	mov si, offset cube4
+	call shot_collsion_detection
 
-mov si, offset shot
-call print_dot_from_memory
+	mov si, offset shot
+	call print_dot_from_memory
 
-jmp next
+	call display_score
+
+	jmp next
     ret
 endp
 
